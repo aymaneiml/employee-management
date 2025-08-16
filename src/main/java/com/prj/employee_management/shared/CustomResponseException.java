@@ -1,0 +1,16 @@
+package com.prj.employee_management.shared;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@AllArgsConstructor
+@Data
+public class CustomResponseException extends RuntimeException{
+
+    private int statusCode;
+    private String message;
+
+    public static CustomResponseException ResourceNotFound(String message){
+        return new CustomResponseException(404, message);
+    }
+}
