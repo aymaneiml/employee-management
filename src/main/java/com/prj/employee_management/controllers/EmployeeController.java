@@ -39,15 +39,14 @@ public class EmployeeController {
     @GetMapping("/{employeeId}")
     public ResponseEntity<Employee> findOne(@PathVariable UUID employeeId) {
         //nous avons faire Optional car il peut etre null
-        Optional<Employee> employee = this.employees.stream()
+        Employee employee = this.employees.stream()
             .filter(emp -> emp.getId().equals(employeeId))
-            .findFirst();
-
-        if(employee.isEmpty()){
-            throw CustomResponseException.ResourceNotFound("Employee with id " + employeeId + "not found !");
-        }
+            .findFirst()
+            .orElseThrow(() -> CustomResponseException.ResourceNotFound(
+                "Employee with id " + employeeId + "not found !"
+                ));
         
-        return new ResponseEntity<Employee>(employee.get(), HttpStatus.OK);
+        return new ResponseEntity<Employee>(employee, HttpStatus.OK);
     }
 
     @PostMapping
@@ -91,23 +90,19 @@ public class EmployeeController {
     public ResponseEntity<Employee> updateOne(@PathVariable UUID employeeId, @RequestBody @Valid Employee employee) {
 
         //trouver l'employee
-        Optional<Employee> existingEmployee = this.employees.stream()
+        Employee existingEmployee = this.employees.stream()
             .filter(emp -> emp.getId().equals(employeeId))
-            .findFirst();
+            .findFirst()
+            .orElseThrow(()-> CustomResponseException.ResourceNotFound("Employee with id " + employeeId + "not found !"));
 
-        if(existingEmployee.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        if(existingEmployee.isPresent()){
-            existingEmployee.get().setFirstName(employee.getFirstName());
-            existingEmployee.get().setLastName(employee.getLastName());
-            existingEmployee.get().setEmail(employee.getEmail());
-            existingEmployee.get().setPhoneNumber(employee.getPhoneNumber());
-            existingEmployee.get().setDepartementId(employeeId);
-            existingEmployee.get().setPosition(employee.getPosition());
-            existingEmployee.get().setHireDate(employee.getHireDate());
-        }
+            existingEmployee.setFirstName(employee.getFirstName());
+            existingEmployee.setLastName(employee.getLastName());
+            existingEmployee.setEmail(employee.getEmail());
+            existingEmployee.setPhoneNumber(employee.getPhoneNumber());
+            existingEmployee.setDepartementId(employeeId);
+            existingEmployee.setPosition(employee.getPosition());
+            existingEmployee.setHireDate(employee.getHireDate());
+        
 
         return new ResponseEntity<Employee>(employee, HttpStatus.CREATED);
 
