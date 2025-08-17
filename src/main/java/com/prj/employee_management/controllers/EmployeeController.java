@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.prj.employee_management.abstracts.EmployeeService;
+import com.prj.employee_management.dtos.EmployeeCreateDTO;
+import com.prj.employee_management.dtos.EmployeeUpdateDTO;
 import com.prj.employee_management.entities.Employee;
+import com.prj.employee_management.services.EmployeeServiceImp;
 import com.prj.employee_management.shared.GlobalResponse;
 
 import jakarta.validation.Valid;
@@ -29,7 +32,7 @@ public class EmployeeController {
     ArrayList<Employee> employees = new ArrayList<>();
     
     @Autowired
-    private EmployeeService employeeService;
+    private EmployeeServiceImp employeeService;
     
 
     @GetMapping
@@ -46,7 +49,7 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<Employee> addEmployee(@RequestBody @Valid Employee newEmployee) {
+    public ResponseEntity<Employee> addEmployee(@RequestBody @Valid EmployeeCreateDTO newEmployee) {
         Employee employee = employeeService.addEmployee(newEmployee);
         return new ResponseEntity<Employee>(employee, HttpStatus.OK);
     }
@@ -60,7 +63,7 @@ public class EmployeeController {
 
     //dans update on envoi l'id et le 
     @PutMapping("{employeeId}")
-    public ResponseEntity<Employee> updateOne(@PathVariable UUID employeeId, @RequestBody @Valid Employee employee) {
+    public ResponseEntity<Employee> updateOne(@PathVariable UUID employeeId, @RequestBody @Valid EmployeeUpdateDTO employee) {
         Employee updatedEmployee = employeeService.updateEmployee(employeeId, employee);
         return new ResponseEntity<Employee>(updatedEmployee, HttpStatus.CREATED);
     }

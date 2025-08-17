@@ -3,47 +3,48 @@ package com.prj.employee_management.entities;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.UuidGenerator;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "employee") //pour personaliser le nom de la table, car par defaut prend le nom de la class
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Employee {
 
-    
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @UuidGenerator
     private UUID id;
 
-    @NotNull(message = "first name is required")
-    @Size(min = 2, max = 50, message = "min is 2 character and max is 50 character")
+    @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
 
-    @NotNull(message = "last name is required")
-    @Size(min = 2, max = 50, message = "min is 2 character and max is 50 character")
+    @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
 
-    @NotNull(message = "last name is required")
-    @Email(message = "Invalid email format")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @NotNull(message = "phoneNumber is required")
-    @Pattern(regexp = "^\\+?[0-9]{10,15}$" , message= "Invalid phone number format")
+    @Column(name = "phone_number", length = 25)
     private String phoneNumber;
 
-    @NotNull(message = "hireDate is required")
-    @PastOrPresent(message = "Hire date cannot be inthe futur")
+    @Column(name = "hire_Date", nullable = false)
     private LocalDate hireDate;
 
-    @NotNull(message = "position is required")
-    @Size(min = 2, max = 50, message = "min is 2 character and max is 50 character")
+    @Column(name = "position", nullable = false)
     private String position;
 
-    private UUID departementId;
+    @Column(name = "departement_id", nullable = false)
+    private UUID departementId = UUID.randomUUID();
 
 }
