@@ -1,6 +1,6 @@
 package com.prj.employee_management.services;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.prj.employee_management.dtos.EmployeeCreateDTO;
 import com.prj.employee_management.dtos.EmployeeUpdateDTO;
+import com.prj.employee_management.entities.Department;
 import com.prj.employee_management.entities.Employee;
+import com.prj.employee_management.repositories.DepartmentRepo;
 import com.prj.employee_management.repositories.EmployeeRepo;
 import com.prj.employee_management.shared.CustomResponseException;
 
@@ -20,6 +22,9 @@ public class EmployeeServiceImp{
 
     @Autowired
     private EmployeeRepo employeeRepo;
+
+    @Autowired
+    private DepartmentRepo departmentRepo;
     
     public Employee findOne(UUID employeeId) {
         
@@ -61,6 +66,11 @@ public class EmployeeServiceImp{
         //conversion de DTO a entity
         Employee employee = new Employee();
 
+        Department department = departmentRepo.findById(newEmployeeDTO.departmentId())
+        .orElseThrow(()-> CustomResponseException.ResourceNotFound(
+            "DEpartment with id: " + newEmployeeDTO.departmentId() + " not found!!"
+        ));
+
         
         employee.setFirstName(newEmployeeDTO.firstName());
         employee.setLastName(newEmployeeDTO.lastName());
@@ -68,6 +78,7 @@ public class EmployeeServiceImp{
         employee.setHireDate(newEmployeeDTO.hireDate());
         employee.setPhoneNumber(newEmployeeDTO.phoneNumber());
         employee.setEmail(newEmployeeDTO.email());
+        employee.setDepartment(department);
 
         
         employeeRepo.save(employee);

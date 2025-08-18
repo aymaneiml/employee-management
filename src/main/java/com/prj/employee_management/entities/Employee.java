@@ -5,10 +5,15 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,7 +49,16 @@ public class Employee {
     @Column(name = "position", nullable = false)
     private String position;
 
-    @Column(name = "departement_id", nullable = false)
-    private UUID departementId = UUID.randomUUID();
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "departement_id", nullable = false)
+    @JsonProperty("departmentId")
+    private Department department ;
+
+    //faire la redefinition de la methode getDepartment pour retourner juste l'id de departement et non tous l'objet (LAZY)
+    public UUID getDepartment(){
+        return department.getId();
+    }
+
+
 
 }

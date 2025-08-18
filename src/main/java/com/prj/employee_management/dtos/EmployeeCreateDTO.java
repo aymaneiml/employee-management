@@ -33,7 +33,10 @@ public record EmployeeCreateDTO(
 
     @NotNull(message = "position is required")
     @Size(min = 2, max = 50, message = "min is 2 character and max is 50 character")
-    String position
+    String position,
+
+    @NotNull(message = "department id is required")
+    UUID departmentId
     
 ) {
 }
