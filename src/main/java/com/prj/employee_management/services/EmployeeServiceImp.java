@@ -1,28 +1,29 @@
 package com.prj.employee_management.services;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.prj.employee_management.abstracts.EmployeeService;
 import com.prj.employee_management.dtos.EmployeeCreateDTO;
 import com.prj.employee_management.dtos.EmployeeUpdateDTO;
 import com.prj.employee_management.entities.Employee;
+import com.prj.employee_management.repositories.EmployeeRepo;
 import com.prj.employee_management.shared.CustomResponseException;
 
 @Service
 public class EmployeeServiceImp{
 
-    ArrayList<Employee> employees = new ArrayList<>();
 
+    @Autowired
+    private EmployeeRepo employeeRepo;
     
     public Employee findOne(UUID employeeId) {
         
-        Employee employee = this.employees.stream()
-            .filter(emp -> emp.getId().equals(employeeId))
-            .findFirst()
+        Employee employee = employeeRepo.findById(employeeId)
             .orElseThrow(() -> CustomResponseException.ResourceNotFound(
                 "Employee with id " + employeeId + "not found !"
                 ));
@@ -31,20 +32,16 @@ public class EmployeeServiceImp{
     }
     
     
-    public ArrayList<Employee> findAll(){
-        return employees;
+    public List<Employee> findAll(){
+        return employeeRepo.findAll();
     }
 
     
     public void deleteOne(UUID employeeId){
-        Optional<Employee> employee = employees.stream()
-            .filter( emp -> emp.getId().equals(employeeId))
-            .findFirst();
-
+        Optional<Employee> employee = employeeRepo.findById(employeeId);
         if(employee.isPresent()){
-            employees.remove(employee);
+            employeeRepo.deleteById(employeeId);
         }    
-
     }
 
     
@@ -54,18 +51,17 @@ public class EmployeeServiceImp{
         }
 
         // check existing employee by ID
-        boolean exists = this.employees.stream()
+        boolean exists = employeeRepo.findAll().stream()
                 .anyMatch(emp -> emp.getEmail().equals(newEmployeeDTO.email()));
 
         if (exists) {
-            throw new RuntimeException("User already exists!");
+            throw CustomResponseException.AlreadyExists("user already existe");
         }
 
         //conversion de DTO a entity
         Employee employee = new Employee();
-        // assign new IDs
-        employee.setId(UUID.randomUUID());
-        employee.setDepartementId(UUID.randomUUID());
+
+        
         employee.setFirstName(newEmployeeDTO.firstName());
         employee.setLastName(newEmployeeDTO.lastName());
         employee.setPosition(newEmployeeDTO.position());
@@ -73,7 +69,8 @@ public class EmployeeServiceImp{
         employee.setPhoneNumber(newEmployeeDTO.phoneNumber());
         employee.setEmail(newEmployeeDTO.email());
 
-        employees.add(employee);
+        
+        employeeRepo.save(employee);
 
         return employee;
 
@@ -82,9 +79,7 @@ public class EmployeeServiceImp{
     
     public Employee updateEmployee(UUID employeeId, EmployeeUpdateDTO employee) {
             //trouver l'employee
-        Employee existingEmployee = this.employees.stream()
-            .filter(emp -> emp.getId().equals(employeeId))
-            .findFirst()
+        Employee existingEmployee = employeeRepo.findById(employeeId)
             .orElseThrow(()-> CustomResponseException.ResourceNotFound("Employee with id " + employeeId + "not found !"));
 
             existingEmployee.setFirstName(employee.firstName());
@@ -92,8 +87,7 @@ public class EmployeeServiceImp{
             existingEmployee.setPhoneNumber(employee.phoneNumber());
             existingEmployee.setPosition(employee.position());
 
-        
+            employeeRepo.save(existingEmployee);
             return existingEmployee;
-    
     }
 }

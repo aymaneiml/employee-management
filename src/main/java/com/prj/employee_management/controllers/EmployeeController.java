@@ -2,6 +2,7 @@ package com.prj.employee_management.controllers;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,8 @@ public class EmployeeController {
     
 
     @GetMapping
-    public ResponseEntity<GlobalResponse<ArrayList<Employee>>> findAll(){
-        ArrayList<Employee> employees = employeeService.findAll();
+    public ResponseEntity<GlobalResponse<List<Employee>>> findAll(){
+        List<Employee> employees = employeeService.findAll();
         return new ResponseEntity<>(new GlobalResponse<>(employees), HttpStatus.OK);
     }
     
