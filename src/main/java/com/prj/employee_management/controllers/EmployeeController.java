@@ -20,8 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.prj.employee_management.abstracts.EmployeeService;
 import com.prj.employee_management.dtos.EmployeeCreateDTO;
 import com.prj.employee_management.dtos.EmployeeUpdateDTO;
+import com.prj.employee_management.dtos.LeaveRequestCreateDTO;
 import com.prj.employee_management.entities.Employee;
+import com.prj.employee_management.entities.LeaveRequest;
 import com.prj.employee_management.services.EmployeeServiceImp;
+import com.prj.employee_management.services.LeaveRequestService;
 import com.prj.employee_management.shared.GlobalResponse;
 
 import jakarta.validation.Valid;
@@ -29,11 +32,12 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/employees")
 public class EmployeeController {
-
-    ArrayList<Employee> employees = new ArrayList<>();
     
     @Autowired
     private EmployeeServiceImp employeeService;
+
+    @Autowired
+    private LeaveRequestService leaveRequestService;
     
 
     @GetMapping
@@ -69,11 +73,18 @@ public class EmployeeController {
         return new ResponseEntity<Employee>(updatedEmployee, HttpStatus.CREATED);
     }
 
-    @PostMapping("{nbr1}/{nbr2}")
-    public ResponseEntity<GlobalResponse<?>> division(@PathVariable int nbr1, @PathVariable int nbr2){
-        int resultat = nbr1 / nbr2;
-        return new ResponseEntity<>(new GlobalResponse<>(resultat), HttpStatus.OK);
+
+    //creat one leave
+    @PostMapping("/{employeeId}/leave-request")
+    public ResponseEntity<GlobalResponse<LeaveRequest>> createOne(@RequestBody LeaveRequestCreateDTO leaveRequest, @PathVariable UUID employeeId){
+        LeaveRequest newLeaveRequest = leaveRequestService.createOne(leaveRequest, employeeId);
+        return new ResponseEntity<>(new GlobalResponse<>(newLeaveRequest), HttpStatus.CREATED);
     }
 
+    @GetMapping("/{employeeId}/leave-requests")
+    public ResponseEntity<GlobalResponse<List<LeaveRequest>>> findAllLeavesById(@PathVariable UUID employeeId){
+        List<LeaveRequest> leaveRequests = leaveRequestService.findAllByEmployeeId(employeeId);
+        return new ResponseEntity<>(new GlobalResponse<>(leaveRequests), HttpStatus.OK);
+    }
 
 }
