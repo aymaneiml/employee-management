@@ -17,4 +17,8 @@ public class CustomResponseException extends RuntimeException{
     public static CustomResponseException AlreadyExists(String message){
         return new CustomResponseException(409, message);
     }
+
+    public static CustomResponseException BadCredentials() {
+        return new CustomResponseException(404, "Bad Credentials");
+    }
 }
