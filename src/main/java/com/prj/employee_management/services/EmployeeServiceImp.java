@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.prj.employee_management.dtos.EmployeeCreateDTO;
@@ -15,6 +16,7 @@ import com.prj.employee_management.entities.Employee;
 import com.prj.employee_management.repositories.DepartmentRepo;
 import com.prj.employee_management.repositories.EmployeeRepo;
 import com.prj.employee_management.shared.CustomResponseException;
+import com.prj.employee_management.utils.SecurityUtils;
 
 @Service
 public class EmployeeServiceImp{
@@ -25,7 +27,10 @@ public class EmployeeServiceImp{
 
     @Autowired
     private DepartmentRepo departmentRepo;
+
+
     
+    @PreAuthorize("@securityUtils.isOwner(#employeeId)") //autorisation d'acces juste a les info de leur id,ne peut pas retourn n'importe quel info d'un sutre user 
     public Employee findOne(UUID employeeId) {
         
         Employee employee = employeeRepo.findById(employeeId)
@@ -87,7 +92,7 @@ public class EmployeeServiceImp{
 
     }
 
-    
+    @PreAuthorize("@securityUtils.isOwner(#employeeId)")
     public Employee updateEmployee(UUID employeeId, EmployeeUpdateDTO employee) {
             //trouver l'employee
         Employee existingEmployee = employeeRepo.findById(employeeId)
