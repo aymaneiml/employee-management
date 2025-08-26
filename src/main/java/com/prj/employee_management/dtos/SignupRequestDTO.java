@@ -14,10 +14,8 @@ public record SignupRequestDTO(
 
     @NotNull(message ="password is required")
     @Size(min = 2, max = 50, message = "min is 2 characters and max is 50 characters")
-    String password,
+    String password
 
-    @NotNull(message ="employee is required")
-    UUID employeeId
 
 ) {
 }

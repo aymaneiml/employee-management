@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.prj.employee_management.dtos.LoginRequestDTO;
@@ -22,10 +23,11 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<GlobalResponse<String>> signup(
-        @RequestBody SignupRequestDTO signupRequest
+        @RequestBody SignupRequestDTO signupRequest,
+        @RequestParam String token
     ) {
-        authService.signup(signupRequest);
-        System.out.println(signupRequest.password());
+        System.out.println("token"  + token);
+        authService.signup(signupRequest, token);
         return new ResponseEntity<>(new GlobalResponse<>("Signed UP"), HttpStatus.OK);
     }
 

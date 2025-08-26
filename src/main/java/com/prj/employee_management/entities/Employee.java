@@ -49,6 +49,12 @@ public class Employee {
     @Column(name = "position", nullable = false)
     private String position;
 
+    @Column(name = "is_verified",columnDefinition = "BOOLEAN DEFAULT FALSE",nullable = false)
+    private boolean isVerified;
+
+    @Column(name = "account_creation_token")
+    private String accountCreationToken;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "departement_id", nullable = false)
     @JsonProperty("departmentId")
