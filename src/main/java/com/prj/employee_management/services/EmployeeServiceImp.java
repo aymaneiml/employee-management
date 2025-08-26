@@ -28,6 +28,9 @@ public class EmployeeServiceImp{
     @Autowired
     private DepartmentRepo departmentRepo;
 
+    @Autowired
+    private EmailService emailService;
+
 
     
     @PreAuthorize("@securityUtils.isOwner(#employeeId)") //autorisation d'acces juste a les info de leur id,ne peut pas retourn n'importe quel info d'un sutre user 
@@ -76,6 +79,9 @@ public class EmployeeServiceImp{
             "DEpartment with id: " + newEmployeeDTO.departmentId() + " not found!!"
         ));
 
+        String token = UUID.randomUUID().toString();
+        employee.setVerified(false);
+        employee.setAccountCreationToken(token);
         
         employee.setFirstName(newEmployeeDTO.firstName());
         employee.setLastName(newEmployeeDTO.lastName());
@@ -85,8 +91,9 @@ public class EmployeeServiceImp{
         employee.setEmail(newEmployeeDTO.email());
         employee.setDepartment(department);
 
-        
         employeeRepo.save(employee);
+
+        emailService.sendAccountCreationEmail(employee.getEmail(), token);
 
         return employee;
 

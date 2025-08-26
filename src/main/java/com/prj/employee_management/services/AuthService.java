@@ -42,18 +42,26 @@ public class AuthService {
     @Autowired
     private JwtHelper jwtHelper;
 
-    public void signup(SignupRequestDTO signupRequest) {
+    public void signup(SignupRequestDTO signupRequest, String token) {
 
         UserAccount account = new UserAccount();
 
-        Employee employee = employeeRepo.findById(signupRequest.employeeId())
-            .orElseThrow(()-> CustomResponseException.ResourceNotFound("Employee with id " +signupRequest.employeeId() + "not found !"));
+        Employee employee = employeeRepo.findOneByAccountCreationToken(token)
+            .orElseThrow(()-> CustomResponseException.ResourceNotFound("Invalid Token"));
+
+        if(employee.isVerified()){
+            throw CustomResponseException.BadRequest("Account already created");
+        }
 
         account.setUsername(signupRequest.username());
         account.setPassword(passwordEncoder.encode(signupRequest.password()));
         account.setEmployee(employee);
 
         userAccountRepo.save(account);
+
+        employee.setVerified(true);
+        employee.setAccountCreationToken(null);
+        employeeRepo.save(employee);
     }
 
     //retourn String car retourn le Token
